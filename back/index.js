@@ -3,6 +3,7 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var bodyParser = require("body-parser");
 const port = 3001;
+const users = new Map();
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,15 +20,18 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
-io.on("connection", function(socket) {
-  console.log("a user connected");
-  socket.on("disconnect", function() {
+io.on("connection", socket => {
+  socket.on("disconnect", () => {
     console.log("user disconnected");
-  }); // chatMessage
+  });
 
   socket.on("message", msg => {
-    console.log(msg);
-    io.emit("chatMessage", msg);
+    io.emit("chatMessage", { msg: msg, user: users.get(socket.id) });
+  });
+
+  socket.on("register", name => {
+    users.set(socket.id, name);
+    console.log(name);
   });
 });
 
