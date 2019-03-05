@@ -21,12 +21,16 @@ app.get("/", function(req, res) {
 });
 
 io.on("connection", socket => {
+  console.log("user Connection");
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
   socket.on("message", msg => {
-    io.emit("chatMessage", { msg: msg, user: users.get(socket.id) });
+    console.log(msg);
+    io.emit("newMessage", msg);
+    // io.emit("chatMessage", { msg: msg, user: users.get(socket.id) });
   });
 
   socket.on("register", name => {
