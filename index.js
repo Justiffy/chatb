@@ -62,6 +62,10 @@ io.on('message', msg => {
   console.log(msg)
 })
 
+app.get('/checkport', function(req, res) {
+  res.send(process.env.PORT || port)
+})
+
 http.listen(process.env.PORT || port, function() {
   console.log(`listening on port *:${process.env.PORT || port}`)
 })
