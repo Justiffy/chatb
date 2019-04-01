@@ -62,6 +62,6 @@ io.on('message', msg => {
   console.log(msg)
 })
 
-http.listen(process.env.PORT || 3001, function() {
-  console.log(`listening on port *:${port}`)
+http.listen(process.env.PORT || port, function() {
+  console.log(`listening on port *:${process.env.PORT || port}`)
 })
