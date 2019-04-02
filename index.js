@@ -32,7 +32,7 @@ io.on('connection', socket => {
   socket.on('a', q => {
     console.log('A socket')
     console.log(q)
-    socket.emit('B', 'asd')
+    socket.emit('B', socket.id)
   })
 
   socket.on('message', data => {
