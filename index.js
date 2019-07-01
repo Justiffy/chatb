@@ -13,12 +13,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('/api', function(req, res) {
+app.get('/api', function (req, res) {
   res.send(req.body)
   console.log(res.body)
 })
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html')
 })
 
@@ -29,10 +29,8 @@ io.on('connection', socket => {
     console.log('user disconnected')
   })
 
-  socket.on('a', q => {
-    console.log('A socket')
-    console.log(q)
-    socket.emit('B', socket.id)
+  socket.on('socketInit', q => {
+    socket.emit('sendUserID', socket.id)
   })
 
   socket.on('message', data => {
@@ -62,10 +60,10 @@ io.on('message', msg => {
   console.log(msg)
 })
 
-app.get('/checkport', function(req, res) {
+app.get('/checkport', function (req, res) {
   res.send(process.env.PORT || port)
 })
 
-http.listen(process.env.PORT || port, function() {
+http.listen(process.env.PORT || port, function () {
   console.log(`listening on port *:${process.env.PORT || port}`)
 })
