@@ -43,7 +43,8 @@ io.on('connection', socket => {
       },
       message: {
         id: nanoID(),
-        message: data.message
+        message: data.message,
+        date: Date.now(),
       }
     }
 
