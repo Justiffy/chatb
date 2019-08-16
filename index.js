@@ -1,70 +1,26 @@
-var app = require('express')()
-var http = require('http').Server(app)
-var io = require('socket.io')(http)
-var bodyParser = require('body-parser')
-const nanoID = require('nanoid')
+const app = require("express")();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
-const port = 3001
-const users = new Map()
+const socketLayer = require("./socket.js");
+const MessageController = require("./controllers/message.controller.js");
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+const port = 3001;
+const users = new Map();
+const mongoDB = "mongodb://listar:375477787aA@ds113871.mlab.com:13871/listardb";
+
+// Conntect to MLab
+mongoose.connect(mongoDB, err => {
+  if (err) throw err;
+});
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+socketLayer.socket(io);
 
-app.get('/api', function (req, res) {
-  res.send(req.body)
-  console.log(res.body)
-})
-
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html')
-})
-
-io.on('connection', socket => {
-  console.log('user Connection')
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
-  })
-
-  socket.on('socketInit', q => {
-    socket.emit('sendUserID', socket.id)
-  })
-
-  socket.on('message', data => {
-    console.log(data)
-    const messageData = {
-      user: {
-        id: socket.id,
-        user: data.name,
-        src: data.src
-      },
-      message: {
-        id: nanoID(),
-        message: data.message,
-        date: Date.now(),
-      }
-    }
-
-    io.emit('newMessage', messageData)
-  })
-
-  socket.on('register', name => {
-    users.set(socket.id, name)
-    console.log(name)
-  })
-})
-
-io.on('message', msg => {
-  console.log(msg)
-})
-
-app.get('/checkport', function (req, res) {
-  res.send(process.env.PORT || port)
-})
-
-http.listen(process.env.PORT || port, function () {
-  console.log(`listening on port *:${process.env.PORT || port}`)
-})
+http.listen(process.env.PORT || port, function() {
+  console.log(`listening on port *:${process.env.PORT || port}`);
+});
